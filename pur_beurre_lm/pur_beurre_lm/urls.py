@@ -21,6 +21,7 @@ from healthier_food import views
 
 urlpatterns = [
     path('', views.home),
+    path('healthier_food/', include(('healthier_food.urls', 'healthier_food'), namespace='healthier_food')),
     path('admin/', admin.site.urls),
 ]
 
