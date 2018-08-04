@@ -79,6 +79,10 @@ class DbFiller:
                 brands = (product['brands']).split(',')
                 self.brand = brands[0].capitalize()
                 self.url = product['url']
+                self.nutrition_grade = product['nutrition_grades'].lower()
+                self.image = product['image_url']
+                # self.image = product['image_small_url']
+                self.energy = product['energy_100g']
                 categories_to_strip = (product['categories']).split(',')
                 self.categories = []
                 for category in categories_to_strip:
@@ -87,13 +91,14 @@ class DbFiller:
                 self.stores = []
                 for store in stores_to_strip:
                     self.stores.append(store.strip().capitalize())
-                self.nutrition_grade = product['nutrition_grades'].lower()
 
             except KeyError:
                 print('Missing data', file=open('print_log.txt', 'a'))
 
+# Remplacer 'print' par 'logging'
+
             if all([self.code, self.name, self.description, self.brand,
-                    self.url, self.nutrition_grade, self.categories[0],
+                    self.url, self.nutrition_grade,self.image, self.energy, self.categories[0],
                     self.stores[0]]):
 
                 try:
