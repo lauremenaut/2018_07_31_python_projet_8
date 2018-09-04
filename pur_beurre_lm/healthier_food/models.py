@@ -39,7 +39,7 @@ class Product(models.Model):
     url = models.URLField(max_length=250, unique=True)
     nutrition_grade = models.CharField(max_length=1)
     image = models.ImageField()
-    energy = models.IntegerField()
+    # energy = models.IntegerField()
     categories = models.ManyToManyField(Category, related_name='products')
     stores = models.ManyToManyField(Store, related_name='products')
 
