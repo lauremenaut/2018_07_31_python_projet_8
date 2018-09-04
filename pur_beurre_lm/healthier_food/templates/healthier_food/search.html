@@ -1,18 +1,23 @@
 {% extends 'healthier_food/base.html' %}
 
 {% block content %}
-    {% for unhealthy_product in unhealthy_products %}
-        <header class="detail_bg masthead text-center text-white d-flex">
-          <div class="container my-auto">
-            <div class="row">
-              <div class="col-lg-10 mx-auto">
-                <h2 class="text-uppercase">
-                  <strong>{{ unhealthy_product }}</strong>
-                </h1>
-                <hr>
-              </div>
+    <header class="detail_bg masthead text-center text-white d-flex">
+        <div class="container my-auto">
+            <div class="row">{{products_dict|length}} produits correspondants
+                <ul class="col-lg-10 mx-auto">
+                    {% for unhealthy, healthy in products_dict.items %}
+                        <li class="text-uppercase">
+                            <a href="/healthier_food/{{ healthy }}"><strong>{{ unhealthy }}</strong></a>
+                        </li>
+                        {% if not forloop.last %}
+                            <hr>
+                        {% endif %}
+
+                        {% empty %}
+                            <p>Aucun produit ne correspond à votre recherche</p>
+                    {% endfor %}
+                </ul>
             </div>
-          </div>
-        </header>
-    {% endfor %}
+        </div>
+    </header>
 {% endblock %}
