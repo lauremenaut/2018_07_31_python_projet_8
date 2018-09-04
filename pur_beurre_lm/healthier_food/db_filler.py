@@ -82,7 +82,7 @@ class DbFiller:
                 self.nutrition_grade = product['nutrition_grades'].lower()
                 self.image = product['image_url']
                 # self.image = product['image_small_url']
-                self.energy = product['energy_100g']
+                # self.energy = product['energy_100g']
                 categories_to_strip = (product['categories']).split(',')
                 self.categories = []
                 for category in categories_to_strip:
@@ -92,34 +92,46 @@ class DbFiller:
                 for store in stores_to_strip:
                     self.stores.append(store.strip().capitalize())
 
-            except KeyError:
-                print('Missing data', file=open('print_log.txt', 'a'))
+            except KeyError as e:
+                print('KeyError : ', e)
+                # print('Missing data', file=open('print_log.txt', 'a'))
 
 # Remplacer 'print' par 'logging'
 
             if all([self.code, self.name, self.description, self.brand,
-                    self.url, self.nutrition_grade,self.image, self.energy, self.categories[0],
+                    self.url, self.nutrition_grade, self.image, self.categories[0],
                     self.stores[0]]):
 
                 try:
                     new_product = Product(code=self.code, name=self.name,
                                           description=self.description,
                                           brand=self.brand, url=self.url,
-                                          nutrition_grade=self.nutrition_grade)
+                                          nutrition_grade=self.nutrition_grade,
+                                          image=self.image)
                     new_product.save()
 
                     for category in self.categories:
-                        Category.objects.create(name=category)
-                        new_category = Category.objects.get(name=category)
-                        new_product.categories.add(new_category.id)
+                        existing_category = Category.objects.filter(name=category)
+                        if existing_category:
+                            new_product.categories.add(existing_category[0].id)
+                        else:
+                            Category.objects.create(name=category)
+                            new_category = Category.objects.get(name=category)
+                            new_product.categories.add(new_category.id)
 
                     for store in self.stores:
-                        Store.objects.create(name=store)
-                        new_store = Store.objects.get(name=store)
-                        new_product.stores.add(new_store.id)
+                        existing_store = Store.objects.filter(name=store)
+                        if existing_store:
+                            new_product.stores.add(existing_store[0].id)
+                        else:
+                            Store.objects.create(name=store)
+                            new_store = Store.objects.get(name=store)
+                            new_product.stores.add(new_store.id)
 
                 except IntegrityError as e:
-                    print("IntegrityError : ", e, file=open('print_log.txt', 'a'))
+                    print("IntegrityError : ", e)
+                    # print("IntegrityError : ", e, file=open('print_log.txt', 'a'))
 
                 except DataError as e:
-                    print("DataError : ", e, file=open('print_log.txt', 'a'))
+                    print("DataError : ", e)
+                    # print("DataError : ", e, file=open('print_log.txt', 'a'))
