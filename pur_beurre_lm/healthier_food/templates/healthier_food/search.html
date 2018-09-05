@@ -1,13 +1,13 @@
 {% extends 'healthier_food/base.html' %}
 
 {% block content %}
-    <header class="detail_bg masthead text-center text-white d-flex">
+    <header class="search_bg masthead text-center text-white d-flex">
         <div class="container my-auto">
-            <div class="row">{{products_dict|length}} produits correspondants
+            <div class="row">{{unhealthy_products|length}} produits correspondants à votre recherche - Lequel voulez-vous substituer ?
                 <ul class="col-lg-10 mx-auto">
-                    {% for unhealthy, healthy in products_dict.items %}
+                    {% for unhealthy_product in unhealthy_products %}
                         <li class="text-uppercase">
-                            <a href="/healthier_food/{{ healthy }}"><strong>{{ unhealthy }}</strong></a>
+                            <a href="/healthier_food/substitute/{{ unhealthy_product.code }}"><strong>{{ unhealthy_product }}</strong></a>
                         </li>
                         {% if not forloop.last %}
                             <hr>
