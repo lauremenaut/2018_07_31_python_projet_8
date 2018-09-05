@@ -170,8 +170,12 @@ img::-moz-selection {
   background-image: url("../img/header.jpg");
 }
 
+.search_bg {
+  background-image: url("../img/header2.jpg");
+}
+
 .detail_bg {
-  background-image: url("../img/header.jpg");
+  background-image: url("../img/header3.jpg");
 }
 
 header.masthead {
