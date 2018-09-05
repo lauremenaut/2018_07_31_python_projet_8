@@ -3,20 +3,20 @@
 {% block content %}
     <header class="search_bg masthead text-center text-white d-flex">
         <div class="container my-auto">
-            <div class="row">Voici les {{healthy_products|length}} meilleurs substituts envisageables :
-                <ul class="col-lg-10 mx-auto">
-                    {% for healthy_product in healthy_products %}
-                        <li class="text-uppercase">
-                            <a href="/healthier_food/{{ healthy_product.code }}"><strong>{{ healthy_product.name }}</strong></a>
-                        </li>
-                        {% if not forloop.last %}
-                            <hr>
-                        {% endif %}
+            <div class="row">Voici les meilleurs substituts pour remplacer "{{ unhealthy_product }}" :
+            </div>
+            <div class="row">
+                {% for healthy_product in healthy_products %}
+                    <p class="col-xs-12 col-sm-6 col-md-4 col-lg-4 text-uppercase text-center">
+                        <a href="/healthier_food/{{ healthy_product.code }}"><img src="{{ healthy_product.image }}"><br><strong>{{ healthy_product.name }} - {{ healthy_product.nutrition_grade }}</strong></a>
+                    </p>
+                    {% if not forloop.last %}
+                        <hr>
+                    {% endif %}
 
-                        {% empty %}
-                            <p>Aucune proposition de substitut satisfaisante :-(</p>
-                    {% endfor %}
-                </ul>
+                    {% empty %}
+                        <p>Aucune proposition de substitut satisfaisante :-(</p>
+                {% endfor %}
             </div>
         </div>
     </header>
