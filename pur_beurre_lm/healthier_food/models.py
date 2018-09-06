@@ -37,9 +37,18 @@ class Product(models.Model):
     description = models.TextField(max_length=500, unique=True)
     brand = models.CharField(max_length=30)
     url = models.URLField(max_length=250, unique=True)
-    nutrition_grade = models.CharField(max_length=1)
+    nutriscore = models.CharField(max_length=1)
     image = models.ImageField()
     # energy = models.IntegerField()
+    ingredients = models.CharField(max_length=500, null=True)
+    calories = models.IntegerField(null=True)
+    fat = models.IntegerField(null=True)
+    cholesterol = models.IntegerField(null=True)
+    carbohydrates = models.IntegerField(null=True)
+    sugars = models.IntegerField(null=True)
+    fibers = models.IntegerField(null=True)
+    proteins = models.IntegerField(null=True)
+    sodium = models.IntegerField(null=True)
     categories = models.ManyToManyField(Category, related_name='products')
     stores = models.ManyToManyField(Store, related_name='products')
 
@@ -47,13 +56,22 @@ class Product(models.Model):
         return self.name
 
 
-# class History(models.Model):
-#     request_date = models.DateTimeField(auto_now_add=True)
-#     unhealthy_product = models.CharField(max_length=100)
-#     healthy_product = models.CharField(max_length=100)
-#     description = models.TextField(max_length=500)
-#     stores = models.CharField(max_length=100)
-#     url = models.URLField(max_length=250)
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.CharField(max_length=256)
+    password = models.CharField(max_length=256)
 
-#     def __str__(self):
-#         return self.unhealthy_product
+    def __str__(self):
+        return self.name
+
+
+class Favorite(models.Model):
+    request_date = models.DateTimeField(auto_now_add=True)
+    unhealthy_product = models.CharField(max_length=100)
+    healthy_product = models.CharField(max_length=100)
+    description = models.TextField(max_length=500)
+    stores = models.CharField(max_length=100)
+    url = models.URLField(max_length=250)
+
+    def __str__(self):
+        return self.healthy_product
