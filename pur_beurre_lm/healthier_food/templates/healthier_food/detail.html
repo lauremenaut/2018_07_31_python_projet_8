@@ -7,9 +7,13 @@
   <div class="container my-auto">
     <div class="row">
       <div class="col-lg-10 mx-auto">
-        <h1 class="text-uppercase">
+        <img src="{{ product.image }}">
+        <h2 class="text-uppercase">
           <strong>{{ product.name }}</strong>
-        </h1>
+        </h2>
+        <h3 class="text-uppercase">
+          ({{ product.description }})
+        </h3>
         <hr>
       </div>
     </div>
@@ -20,24 +24,32 @@
   <div class="container">
     <div class="row">
 
-      <div class="col-lg-6 col-md-3 text-center">
+      <div class="col-lg-4 col-md-3 text-center">
         <div class="service-box mt-5 mx-auto">
           <i class="fa fa-4x fa-diamond text-primary mb-3 sr-icons"></i>
           <h3 class="mb-3">Nutriscore</h3>
-          <p class="text-muted mb-0">{{ product.nutrition_grade|upper }}</p>
+          <p class="text-muted mb-0">{{ product.nutriscore }}</p>
         </div>
       </div>
 
-      <div class="col-lg-6 col-md-3 text-center">
+      <div class="col-lg-4 col-md-3 text-center">
         <div class="service-box mt-5 mx-auto">
           <i class="fa fa-4x fa-paper-plane text-primary mb-3 sr-icons"></i>
-          <h3 class="mb-3">Energie pour 100 g</h3>
+          <h3 class="mb-3">Ingrédients</h3>
+          <p class="text-muted mb-0">{{ product.ingredients }}</p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-3 text-center">
+        <div class="service-box mt-5 mx-auto">
+          <i class="fa fa-4x fa-paper-plane text-primary mb-3 sr-icons"></i>
+          <h3 class="mb-3">Repères nutritionnels pour 100 g</h3>
           <p class="text-muted mb-0">{{ product.energy }}</p>
         </div>
       </div>
 
       <div class="col-lg-4 mx-auto">
-        <a class="btn btn-primary btn-xl js-scroll-trigger" href={{ product.url }}>Voir la fiche d'Open Food Facts</a>
+        <a class="btn btn-primary btn-xl js-scroll-trigger" href={{ product.url }}>Voir la fiche Open Food Facts</a>
       </div>
 
     </div>
