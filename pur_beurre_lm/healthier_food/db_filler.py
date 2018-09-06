@@ -11,7 +11,7 @@ from django.db.utils import DataError, IntegrityError
 
 from requests import get
 
-from .params import nutrition_grades, tag_categories
+from .params import nutriscores, tag_categories
 from .models import Category, Store, Product
 
 
@@ -27,12 +27,12 @@ class DbFiller:
         local database.
 
         """
-        for nutrition_grade in nutrition_grades:
+        for nutriscore in nutriscores:
             for category in tag_categories:
-                products = self._get_products(category, nutrition_grade)
+                products = self._get_products(category, nutriscore)
                 self._fill_db(products)
 
-    def _get_products(self, category, nutrition_grade):
+    def _get_products(self, category, nutriscore):
         """ Return a list of dictionnaries of products information.
 
         Connect to Open Food Facts API via get() method from requests
@@ -52,7 +52,7 @@ class DbFiller:
             'tag_0': category,
             'tagtype_1': 'nutrition_grades',
             'tag_contains_1': 'contains',
-            'tag_1': nutrition_grade
+            'tag_1': nutriscore
             }
 
         response = get('https://fr.openfoodfacts.org/cgi/search.pl',
@@ -71,18 +71,19 @@ class DbFiller:
         If so, product is added to local database.
 
         """
-        for product in products:
-            try:
+        try:
+            for product in products:
                 self.code = product['code']
                 self.name = product['product_name'].strip().capitalize()
                 self.description = product['generic_name'].capitalize()
                 brands = (product['brands']).split(',')
                 self.brand = brands[0].capitalize()
                 self.url = product['url']
-                self.nutrition_grade = product['nutrition_grades'].lower()
+                self.nutriscore = product['nutrition_grades'].upper()
                 self.image = product['image_url']
                 # self.image = product['image_small_url']
-                # self.energy = product['energy_100g']
+                self.ingredients = product['ingredients_text']
+
                 categories_to_strip = (product['categories']).split(',')
                 self.categories = []
                 for category in categories_to_strip:
@@ -91,23 +92,25 @@ class DbFiller:
                 self.stores = []
                 for store in stores_to_strip:
                     self.stores.append(store.strip().capitalize())
+                # self.calories = product['energy_100g']
+                # self.fat = product['fat_100g']
+                # self.cholesterol = product['cholesterol_100g']
+                # self.carbohydrates = product['carbohydrates_100g']
+                # self.sugars = product['sugars_100g']
+                # self.fibers = product['fiber_100g']
+                # self.proteins = product['proteins_100g']
+                # self.sodium = product['sodium_100g']
 
-            except KeyError as e:
-                print('KeyError : ', e)
-                # print('Missing data', file=open('print_log.txt', 'a'))
+                if all([self.code, self.name, self.description, self.brand,
+                        self.url, self.nutriscore, self.image, self.categories[0],
+                        self.stores[0]]):
 
-# Remplacer 'print' par 'logging'
-
-            if all([self.code, self.name, self.description, self.brand,
-                    self.url, self.nutrition_grade, self.image, self.categories[0],
-                    self.stores[0]]):
-
-                try:
                     new_product = Product(code=self.code, name=self.name,
                                           description=self.description,
                                           brand=self.brand, url=self.url,
-                                          nutrition_grade=self.nutrition_grade,
-                                          image=self.image)
+                                          nutriscore=self.nutriscore,
+                                          image=self.image,
+                                          ingredients=self.ingredients)
                     new_product.save()
 
                     for category in self.categories:
@@ -128,10 +131,18 @@ class DbFiller:
                             new_store = Store.objects.get(name=store)
                             new_product.stores.add(new_store.id)
 
-                except IntegrityError as e:
-                    print("IntegrityError : ", e)
-                    # print("IntegrityError : ", e, file=open('print_log.txt', 'a'))
+        except KeyError as e:
+            print('KeyError : ', e)
+            # print('Missing data', file=open('print_log.txt', 'a'))
 
-                except DataError as e:
-                    print("DataError : ", e)
-                    # print("DataError : ", e, file=open('print_log.txt', 'a'))
+        except AttributeError as e:
+            print("AttributeError : ", e)
+            # print("IntegrityError : ", e, file=open('print_log.txt', 'a'))
+
+        except IntegrityError as e:
+            print("IntegrityError : ", e)
+            # print("IntegrityError : ", e, file=open('print_log.txt', 'a'))
+
+        except DataError as e:
+            print("DataError : ", e)
+            # print("DataError : ", e, file=open('print_log.txt', 'a'))
