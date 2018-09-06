@@ -9,7 +9,16 @@
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#about">Chercher</a>
+          <a class="nav-link js-scroll-trigger" href="#about">
+
+            <div class="col-md-12 text-center">
+                <form action="{% url 'healthier_food:search' %}" method="get" accept-charset="utf-8">
+                    <div class="form-group">
+                        <input id="searchForm" class="form-control" name="query" placeholder="Chercher un produit">
+                    </div>
+                </form>
+            </div>
+          </a>
         </li>
         <li class="nav-item">
           <a class="nav-link js-scroll-trigger" href="#services">Mon compte</a>
