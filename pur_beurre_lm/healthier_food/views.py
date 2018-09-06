@@ -17,13 +17,13 @@ def search(request):
     unhealthy_products_list = []
 
     query = request.GET.get('query')
-    unhealthy_products = Product.objects.filter(name__icontains=query).exclude(nutrition_grade="a").exclude(nutrition_grade="b")[:6]
+    unhealthy_products = Product.objects.filter(name__icontains=query).exclude(nutriscore="a").exclude(nutriscore="b")[:6]
 
     for unhealthy_product in unhealthy_products:
         unhealthy_products_list.append(unhealthy_product)
 
     if len(unhealthy_products_list) < 6:
-        more_unhealthy_products = Product.objects.filter(description__icontains=query).exclude(nutrition_grade="a").exclude(nutrition_grade="b")[:6]
+        more_unhealthy_products = Product.objects.filter(description__icontains=query).exclude(nutriscore="a").exclude(nutriscore="b")[:6]
 
         try:
             i = 0
@@ -35,7 +35,7 @@ def search(request):
             pass
 
     if len(unhealthy_products_list) < 6:
-        more_unhealthy_products = Product.objects.filter(brand__icontains=query).exclude(nutrition_grade="a").exclude(nutrition_grade="b")[:6]
+        more_unhealthy_products = Product.objects.filter(brand__icontains=query).exclude(nutriscore="a").exclude(nutriscore="b")[:6]
 
         try:
             i = 0
@@ -59,7 +59,7 @@ def substitute(request, unhealthy_product_code):
     healthy_products_list = []
     categories = unhealthy_product.categories.all()
     for category in categories:
-        healthy_products = Product.objects.filter(categories=category).exclude(nutrition_grade="d").exclude(nutrition_grade="e")
+        healthy_products = Product.objects.filter(categories=category).exclude(nutriscore="d").exclude(nutriscore="e")
         for healthy_product in healthy_products:
             if healthy_product not in healthy_products_list:
                 healthy_products_list.append(healthy_product)
@@ -84,7 +84,7 @@ def substitute(request, unhealthy_product_code):
     healthiest_matches_list = []
 
     for match in best_matches:
-            healthiest_matches = Product.objects.filter(name=match).filter(nutrition_grade="a")[:6]
+            healthiest_matches = Product.objects.filter(name=match).filter(nutriscore="a")[:6]
             for healthiest_match in healthiest_matches:
                 healthiest_matches_list.append(healthiest_match)
 
