@@ -14,11 +14,40 @@ def search(request):
     # L'utilisateur saisit un mot
     # Le système lui propose des produits non sains qui correspondent à la recherche (6 max)
 
+    unhealthy_products_list = []
+
     query = request.GET.get('query')
     unhealthy_products = Product.objects.filter(name__icontains=query).exclude(nutrition_grade="a").exclude(nutrition_grade="b")[:6]
 
+    for unhealthy_product in unhealthy_products:
+        unhealthy_products_list.append(unhealthy_product)
+
+    if len(unhealthy_products_list) < 6:
+        more_unhealthy_products = Product.objects.filter(description__icontains=query).exclude(nutrition_grade="a").exclude(nutrition_grade="b")[:6]
+
+        try:
+            i = 0
+            while len(unhealthy_products_list) < 6:
+                if more_unhealthy_products[i] not in unhealthy_products_list:
+                    unhealthy_products_list.append(more_unhealthy_products[i])
+                i += 1
+        except IndexError:
+            pass
+
+    if len(unhealthy_products_list) < 6:
+        more_unhealthy_products = Product.objects.filter(brand__icontains=query).exclude(nutrition_grade="a").exclude(nutrition_grade="b")[:6]
+
+        try:
+            i = 0
+            while len(unhealthy_products_list) < 6:
+                if more_unhealthy_products[i] not in unhealthy_products_list:
+                    unhealthy_products_list.append(more_unhealthy_products[i])
+                i += 1
+        except IndexError:
+            pass
+
     template = loader.get_template('healthier_food/search.html')
-    return HttpResponse(template.render({'unhealthy_products': unhealthy_products}, request=request))
+    return HttpResponse(template.render({'unhealthy_products': unhealthy_products_list}, request=request))
 
 def substitute(request, unhealthy_product_code):
     # L'utilisateur a cliqué sur un des produits non sains
