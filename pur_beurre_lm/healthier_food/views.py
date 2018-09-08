@@ -6,7 +6,7 @@ from random import randint
 from .models import Product, Category
 
 def home(request):
-    template = loader.get_template('healthier_food/home.html')
+    template = loader.get_template('pages/home.html')
     return HttpResponse(template.render(request=request))
 
 
@@ -46,7 +46,7 @@ def search(request):
         except IndexError:
             pass
 
-    template = loader.get_template('healthier_food/search.html')
+    template = loader.get_template('pages/search.html')
     return HttpResponse(template.render({'unhealthy_products': unhealthy_products_list}, request=request))
 
 def substitute(request, unhealthy_product_code):
@@ -94,14 +94,14 @@ def substitute(request, unhealthy_product_code):
             healthiest_matches_list.append(best_matches[i])
         i += 1
 
-    template = loader.get_template('healthier_food/substitute.html')
+    template = loader.get_template('pages/substitute.html')
     return HttpResponse(template.render({'unhealthy_product': unhealthy_product, 'healthy_products': healthiest_matches_list}, request=request))
 
 
 def detail(request, product_code):
     code = int(product_code)
     product = Product.objects.get(code=code)
-    template = loader.get_template('healthier_food/detail.html')
+    template = loader.get_template('pages/detail.html')
     return HttpResponse(template.render({'product': product}, request=request))
 
 
