@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <header class="search_bg masthead text-white d-flex">
+        <div class="container-fluid my-auto">
+            <div class="row moules">
+                <h2 class="col-md-12">{{ unhealthy_product }}</h2>
+                <img src="{{ unhealthy_product.image }}" class="col-md-2">
+            </div>
+            <div class="row">Vous pouvez remplacer "{{ unhealthy_product }}" par :
+            </div>
+            <div class="row">
+                {% for healthy_product in healthy_products %}
+                    <p class="col-xs-12 col-sm-6 col-md-4 col-lg-4 text-uppercase text-center">
+                        <a href="/healthier_food/{{ healthy_product.code }}"><img src="{{ healthy_product.image }}"><br><strong>{{ healthy_product.name }} - {{ healthy_product.nutriscore }}</strong></a>
+                    </p>
+                    {% if not forloop.last %}
+                        <hr>
+                    {% endif %}
+
+                    {% empty %}
+                        <p>Aucune proposition de substitut satisfaisante :-(</p>
+                {% endfor %}
+            </div>
+        </div>
+    </header>
+{% endblock %}
