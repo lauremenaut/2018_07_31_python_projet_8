@@ -171,11 +171,16 @@ img::-moz-selection {
 }
 
 .search_bg {
-  background-image: url("../img/header2.jpg");
+  background-color: rgba(232, 167, 93, 0.7);
 }
 
 .detail_bg {
-  background-image: url("../img/header3.jpg");
+  background-color: rgba(232, 167, 93, 0.7);
+}
+
+.moules {
+  background-color: rgba(52, 90, 97, 0.7);
+  height: 350px;
 }
 
 header.masthead {
