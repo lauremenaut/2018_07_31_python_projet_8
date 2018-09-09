@@ -1,0 +1,37 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+<header class="home_bg masthead text-center text-white d-flex">
+  <div class="container my-auto">
+
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h1 class="text-uppercase">
+          <strong>Créez un nouveau compte !</strong>
+        </h1>
+        <hr>
+      </div>
+      <div class="col-lg-8 mx-auto">
+        <h2 class="text-faded mb-5">Entrez votre nom d'utilisateur, votre email et votre mot de passe</h2>
+      </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <form action="{% url 'healthier_food:success_account' %}" method="post" accept-charset="utf-8">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <input id="name" class="form-control" name="name" placeholder="Nom d'utilisateur">
+                    <input id="email" class="form-control" name="email" placeholder="email@email.com">
+                    <input id="password" class="form-control" name="password" placeholder="Mot de passe">
+                </div>
+            </form>
+        </div>
+    </div>
+
+  </div>
+</header>
+
+{% endblock %}
