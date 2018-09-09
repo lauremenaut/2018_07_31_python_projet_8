@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.template import loader
 from random import randint
 
-from .models import Product, Category
+from .models import Product, Category, Contact
 
 def home(request):
     template = loader.get_template('pages/home.html')
@@ -104,4 +104,28 @@ def detail(request, product_code):
     template = loader.get_template('pages/detail.html')
     return HttpResponse(template.render({'product': product}, request=request))
 
+
+def new_account(request):
+    template = loader.get_template('pages/new_account.html')
+    return HttpResponse(template.render(request=request))
+
+
+def success_account(request):
+    name = request.GET.get('name')
+    template = loader.get_template('pages/success_account.html')
+    return HttpResponse(template.render({'name': name}, request=request))
+
+
+def login(request):
+    template = loader.get_template('pages/login.html')
+    return HttpResponse(template.render(request=request))
+
+
+def my_account(request):
+    email = request.GET.get('email')
+    # contact = Contact.objects.get(email=email)
+
+    contact = {'name': 'Toto', 'email': 'toto@toto.com'}
+    template = loader.get_template('pages/my_account.html')
+    return HttpResponse(template.render({'contact': contact}, request=request))
 
