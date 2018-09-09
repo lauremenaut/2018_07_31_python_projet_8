@@ -20,7 +20,7 @@ from django.urls import include, path
 from healthier_food import views
 
 urlpatterns = [
-    path('', views.home),
+    path('home/', views.home),
     path('healthier_food/', include(('healthier_food.urls', 'healthier_food'), namespace='healthier_food')),
     # path('admin/', admin.site.urls), on change le nom de la route 'admin' par défaut pour un minimum de sécurité
     path('admin_purbeurre/', admin.site.urls),
