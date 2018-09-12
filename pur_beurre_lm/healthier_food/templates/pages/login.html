@@ -13,7 +13,7 @@
         <hr>
       </div>
       <div class="col-lg-8 mx-auto">
-        <h2 class="text-faded mb-5">Entrez votre email et votre mot de passe</h2>
+        <h2 class="text-faded mb-5">Entrez votre nom d'utilisateur et votre mot de passe</h2>
       </div>
     </div>
 
@@ -21,11 +21,19 @@
         <div class="col-md-12 text-center">
             <form action="{% url 'healthier_food:my_account' %}" method="get" accept-charset="utf-8">
                 <div class="form-group">
-                    <input id="email" class="form-control" name="email" placeholder="email@email.com">
+                    <input id="username" class="form-control" name="username" placeholder="Nom d'utilisateur (composé de lettres, chiffres, _, @, +, . et -)">
                     <input id="password" class="form-control" name="password" placeholder="Mot de passe">
                 </div>
             </form>
         </div>
+
+        <div class="col-lg-8 mx-auto">
+          <h2 class="text-faded mb-5">Pas encore de compte ?</h2>
+
+          <a class="btn btn-light btn-xl sr-button" href="{% url 'healthier_food:new_account' %}">Créez-en un ici !</a>
+
+        </div>
+
     </div>
 
   </div>
