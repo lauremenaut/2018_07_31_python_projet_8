@@ -1,3 +1,6 @@
+#! /usr/bin/env python3
+# coding: utf-8
+
 from django.db import models
 
 
@@ -17,8 +20,8 @@ class Category(models.Model):
 
 
     class Meta:
-        verbose_name = "Categorie"
-        verbose_name_plural = "Categories"
+        verbose_name = "Catégorie"
+        verbose_name_plural = "Catégories"
 
 
 class Store(models.Model):
@@ -58,29 +61,19 @@ class Product(models.Model):
         verbose_name_plural = "Produits"
 
 
-class Contact(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=255, unique=True)
-    password = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.email
-
-
-    class Meta:
-        verbose_name = "Contact"
-        verbose_name_plural = "Contacts"
-
 class Favorite(models.Model):
-    request_date = models.DateTimeField(auto_now_add=True)
-    unhealthy_product = models.CharField(max_length=100)
-    healthy_product = models.CharField(max_length=100)
-    description = models.TextField(max_length=500)
-    stores = models.CharField(max_length=100)
-    url = models.URLField(max_length=255)
+    username = models.CharField(max_length=150)
+    code = models.BigIntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField(max_length=500, null=True)
+    url = models.URLField(max_length=255, null=True)
+    nutriscore = models.CharField(max_length=1, null=True)
+    image = models.ImageField(null=True)
+
+    stores = models.CharField(max_length=100, null=True)
 
     def __str__(self):
-        return self.healthy_product
+        return self.name
 
 
     class Meta:
