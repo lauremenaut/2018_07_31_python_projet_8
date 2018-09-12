@@ -1,3 +1,6 @@
+#! /usr/bin/env python3
+# coding: utf-8
+
 """
 Django settings for pur_beurre_lm project.
 
