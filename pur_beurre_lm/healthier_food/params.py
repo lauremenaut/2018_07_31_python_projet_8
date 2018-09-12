@@ -1,3 +1,6 @@
+#! /usr/bin/env python3
+# coding: utf-8
+
 # Tags for nutrition grades of healthy and unhealthy products
 nutriscores = ["a", "b", "d", "e"]
 
