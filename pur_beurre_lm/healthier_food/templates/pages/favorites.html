@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <header class="search_bg masthead text-white d-flex">
+        <div class="container-fluid my-auto">
+            <div class="row">Voici vos aliments favoris :
+            </div>
+            <div class="row">
+                {% for favorite in favorites %}
+                    <p class="col-xs-12 col-sm-6 col-md-4 col-lg-4 text-uppercase text-center">
+
+                        <img src="{{ favorite.image }}"><br><strong>{{ favorite.name }} - {{ favorite.nutriscore }}</strong>
+                        <div class="col-lg-4 mx-auto">
+                            <a class="btn btn-primary btn-xl js-scroll-trigger" href={{ favorite.url }}>Voir la fiche Open Food Facts</a>
+                        </div>
+                    </p>
+                    {% if not forloop.last %}
+                        <hr>
+                    {% endif %}
+
+                    {% empty %}
+                        <p>Aucun aliment favori enregistré</p>
+                {% endfor %}
+            </div>
+        </div>
+    </header>
+{% endblock %}
