@@ -9,7 +9,7 @@
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#about">
+          <a class="nav-link js-scroll-trigger">
 
             <div class="col-md-12 text-center">
                 <form action="{% url 'healthier_food:search' %}" method="get" accept-charset="utf-8">
@@ -20,15 +20,34 @@
             </div>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="{% url 'healthier_food:my_account' %}">Mon compte</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#">Mes aliments</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="#">Déconnexion</a>
-        </li>
+
+
+
+        {% if request.user.is_authenticated %}
+        {# {% if 1 == 2 %} #}
+
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="{% url 'healthier_food:my_account' %}">Mon compte</a>
+          </li>
+
+          <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="{% url 'healthier_food:favorites' %}">Mes aliments</a>
+          </li>
+
+          <li class="nav-item">
+          <a class="nav-link js-scroll-trigger" href="{% url 'healthier_food:logout' %}">Déconnexion</a>
+          </li>
+
+        {% else %}
+
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="{% url 'healthier_food:login' %}">Se connecter</a>
+          </li>
+
+
+        {% endif %}
+
+
       </ul>
     </div>
   </div>
