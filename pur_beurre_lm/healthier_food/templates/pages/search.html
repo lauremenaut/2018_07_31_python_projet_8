@@ -8,7 +8,7 @@
             <div class="row">
                 {% for unhealthy_product in unhealthy_products %}
                     <p class="col-xs-12 col-sm-6 col-md-4 col-lg-4 text-uppercase">
-                        <a href="{% url 'healthier_food:substitute' unhealthy_product_code=unhealthy_product.code %}"><img src="{{ unhealthy_product.image }}"><br><strong>{{ unhealthy_product }}</strong></a>
+                        <a href="{% url 'healthier_food:substitute' unhealthy_product_code=unhealthy_product.code %}"><img src="{{ unhealthy_product.image }}"><br><strong>{{ unhealthy_product.name }} - {{ unhealthy_product.nutriscore }}</strong></a>
                     </p>
                     {% if not forloop.last %}
                         <hr>
