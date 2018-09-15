@@ -38,7 +38,7 @@ class Product(models.Model):
     brand = models.CharField(max_length=30)
     url = models.URLField(max_length=255, unique=True)
     nutriscore = models.CharField(max_length=1)
-    image = models.ImageField()
+    image = models.URLField()
     # energy = models.IntegerField()
     ingredients = models.TextField(max_length=500, null=True)
     calories = models.IntegerField(null=True)
