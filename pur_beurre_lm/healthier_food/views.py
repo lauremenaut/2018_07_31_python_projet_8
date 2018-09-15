@@ -3,9 +3,11 @@
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.shortcuts import render, get_object_or_404
 
 from .models import Product, Category, Favorite
+from .forms import NewAccountForm
 
 
 def home(request):
@@ -17,44 +19,62 @@ def search(request):
     # Query submitted by user
     query = request.GET.get('query')
 
-    unhealthy_products_list = []
+    if not query:
+        context = {}
 
-    # Get unhealthy products (i.e. nutriscore = D ou E) which name contains user query
-    unhealthy_products = Product.objects.filter(name__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:6]
-    for unhealthy_product in unhealthy_products:
-        unhealthy_products_list.append(unhealthy_product)
+    else:
+        unhealthy_products_list = []
 
-    # If less than 6 'found by name' products, then add 'found by desription' products
-    if len(unhealthy_products_list) < 6:
-        more_unhealthy_products = Product.objects.filter(description__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:6]
+        # Maximum of displayed products
+        max_products = 20
+
+        # Get unhealthy products (i.e. nutriscore = D ou E) which name contains user query
+        unhealthy_products = Product.objects.filter(name__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
+        for unhealthy_product in unhealthy_products:
+            unhealthy_products_list.append(unhealthy_product)
+
+        # If less than 6 'found by name' products, then add 'found by desription' products
+        if len(unhealthy_products_list) < max_products:
+            more_unhealthy_products = Product.objects.filter(description__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
+
+            try:
+                i = 0
+                while len(unhealthy_products_list) < max_products:
+                    # Add product only if not already in the list
+                    if more_unhealthy_products[i] not in unhealthy_products_list:
+                        unhealthy_products_list.append(more_unhealthy_products[i])
+                    i += 1
+            except IndexError:
+                pass
+
+        # If still less than 6 products, then add 'found by brand' products
+        if len(unhealthy_products_list) < max_products:
+            more_unhealthy_products = Product.objects.filter(brand__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
+
+            try:
+                i = 0
+                while len(unhealthy_products_list) < max_products:
+                    # Add product only if not already in the list
+                    if more_unhealthy_products[i] not in unhealthy_products_list:
+                        unhealthy_products_list.append(more_unhealthy_products[i])
+                    i += 1
+            except IndexError:
+                pass
+
+        paginator = Paginator(unhealthy_products_list, 6)
+        page = request.GET.get('page')
 
         try:
-            i = 0
-            while len(unhealthy_products_list) < 6:
-                # Add product only if not already in the list
-                if more_unhealthy_products[i] not in unhealthy_products_list:
-                    unhealthy_products_list.append(more_unhealthy_products[i])
-                i += 1
-        except IndexError:
-            pass
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
 
-    # If still less than 6 products, then add 'found by brand' products
-    if len(unhealthy_products_list) < 6:
-        more_unhealthy_products = Product.objects.filter(brand__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:6]
-
-        try:
-            i = 0
-            while len(unhealthy_products_list) < 6:
-                # Add product only if not already in the list
-                if more_unhealthy_products[i] not in unhealthy_products_list:
-                    unhealthy_products_list.append(more_unhealthy_products[i])
-                i += 1
-        except IndexError:
-            pass
-
-    context = {
-        'unhealthy_products': unhealthy_products_list
-    }
+        context = {
+            'query': query,
+            'products': products
+        }
 
     return render(request, 'pages/search.html', context)
 
@@ -63,7 +83,7 @@ def substitute(request, unhealthy_product_code):
     """ Select a list of healthy products sharing a maximum of categories with submitted unhealthy one """
 
     # Unhealthy product submitted by user
-    unhealthy_product = Product.objects.get(code=unhealthy_product_code)
+    unhealthy_product = get_object_or_404(Product, code=unhealthy_product_code)
 
     # Get healthy products sharing at least one category with unhealthy product
     healthy_products_list = []
@@ -82,7 +102,7 @@ def substitute(request, unhealthy_product_code):
 
         # Add shared categories in 'shared_categories' list
         for category in categories:
-            if Category.objects.get(name=category) in healthy_product_categories:
+            if get_object_or_404(Category, name=category) in healthy_product_categories:
                 shared_categories.append(category)
 
         # Make a correspondance between healthy product & number of shared categories
@@ -119,7 +139,7 @@ def substitute(request, unhealthy_product_code):
 
     context = {
         'unhealthy_product': unhealthy_product,
-        'healthy_products': healthiest_matches_list
+        'products': healthiest_matches_list
     }
 
     return render(request, 'pages/substitute.html', context)
@@ -127,7 +147,8 @@ def substitute(request, unhealthy_product_code):
 
 def details(request, product_code):
     code = int(product_code)
-    product = Product.objects.get(code=code)
+
+    product = get_object_or_404(Product, code=code)
 
     context = {
         'product': product
@@ -141,18 +162,19 @@ def new_account(request):
 
 
 def account_creation(request):
-    username = request.GET.get('username')
-    password = request.GET.get('password')
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+
+    form = NewAccountForm()
 
     contact = User.objects.filter(username=username)
-    contact = {'username': 'Toto', 'password': 'h6ufd7iu'}
 
-    if not contact:
-        # contact = User.objects.create_user(username=username, email=email, password=password)
-
+    if not contact.exists():
+        contact = User.objects.create_user(username=username, password=password)
 
         context = {
-            'contact': contact
+            'contact': contact,
+            'form': form
         }
 
         return render(request, 'pages/account_success.html', context)
@@ -200,22 +222,26 @@ def favorites(request):
 def add_favorite(request, favorite_code):
     username = "Toto"
 
-    product = Product.objects.get(code=favorite_code)
+    # Check if favorite already in DB
+    favorite = Favorite.objects.filter(code=favorite_code)
+    print(f'favorite = {favorite}')
 
-    favorite = Favorite.objects.create(username=username,
-                                       code=product.code,
-                                       name=product.name,
-                                       description=product.description,
-                                       url=product.url,
-                                       nutriscore=product.nutriscore,
-                                       image=product.image
-                                       )
+    if len(favorite) == 0:
+        product = get_object_or_404(Product, code=favorite_code)
+        favorite = Favorite.objects.create(username=username,
+                                           code=product.code,
+                                           name=product.name,
+                                           description=product.description,
+                                           url=product.url,
+                                           nutriscore=product.nutriscore,
+                                           image=product.image
+                                           )
 
-    context = {
-        'favorite': favorite
-    }
+        context = {
+            'favorite': favorite
+        }
 
-    return render(request, 'pages/favorite_success.html', context)
+        return render(request, 'pages/favorite_success.html', context)
 
 
 def logout_user(request):
