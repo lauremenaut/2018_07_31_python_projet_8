@@ -1,23 +1,29 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/products_display.html' %}
 
-{% block content %}
-    <header class="search_bg masthead text-center text-white d-flex">
-        <div class="container my-auto">
-            <div class="row">Voici les produits correspondants à votre recherche - Lequel voulez-vous substituer ?
-            </div>
-            <div class="row">
-                {% for unhealthy_product in unhealthy_products %}
-                    <p class="col-xs-12 col-sm-6 col-md-4 col-lg-4 text-uppercase">
-                        <a href="{% url 'healthier_food:substitute' unhealthy_product_code=unhealthy_product.code %}"><img src="{{ unhealthy_product.image }}"><br><strong>{{ unhealthy_product.name }} - {{ unhealthy_product.nutriscore }}</strong></a>
-                    </p>
-                    {% if not forloop.last %}
-                        <hr>
-                    {% endif %}
 
-                    {% empty %}
-                        <p>Aucun produit ne correspond à votre recherche</p>
-                {% endfor %}
-            </div>
-        </div>
-    </header>
+
+
+
+
+
+
+{% block sentence %}
+    <div class="row">Voici les produits correspondants à la recherche "{{ query }}" - Lequel voulez-vous substituer ?
+    </div>
+{% endblock %}
+
+{% block product_to_display %}
+    <a href="{% url 'healthier_food:substitute' unhealthy_product_code=product.code %}"><img src="{{ product.image }}"><br><strong>{{ product.name }} - {{ product.nutriscore }}</strong></a>
+{% endblock %}
+
+{% block if_empty_sentence %}
+    <p>Aucun produit ne correspond à votre recherche</p>
+{% endblock %}
+
+{% block url_for_previous %}
+    <li><a href="?query={{ query }}&page={{ products.previous_page_number }}">Précédent</a></li>
+{% endblock %}
+
+{% block url_for_next %}
+    <li><a href="?query={{ query }}&page={{ products.next_page_number }}">Suivant</a></li>
 {% endblock %}

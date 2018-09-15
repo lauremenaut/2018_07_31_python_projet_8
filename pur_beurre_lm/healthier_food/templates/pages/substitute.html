@@ -1,31 +1,31 @@
-{% extends 'layouts/base.html' %}
+{% extends 'layouts/products_display.html' %}
 
-{% block content %}
-    <header class="search_bg masthead text-white d-flex">
-        <div class="container-fluid my-auto">
-            <div class="row moules">
-                <h2 class="col-md-12">{{ unhealthy_product }}</h2>
-                <img src="{{ unhealthy_product.image }}" class="col-md-2">
-            </div>
-            <div class="row">Vous pouvez remplacer "{{ unhealthy_product }}" par :
-            </div>
-            <div class="row">
-                {% for healthy_product in healthy_products %}
-                    <p class="col-xs-12 col-sm-6 col-md-4 col-lg-4 text-uppercase text-center">
-                        <a href="{% url 'healthier_food:details' product_code=healthy_product.code %}"><img src="{{ healthy_product.image }}"><br><strong>{{ healthy_product.name }} - {{ healthy_product.nutriscore }}</strong><br></a>
+{% block product_to_replace %}
+    <div class="row moules">
+        <h2 class="col-md-12">{{ unhealthy_product }}</h2>
+        <img src="{{ unhealthy_product.image }}" class="col-md-2">
+    </div>
+{% endblock %}
 
-                        <a class="btn btn-light btn-xl sr-button" href="{% url 'healthier_food:add_favorite' favorite_code=healthy_product.code %}">Ajouter aux favoris</a>
+{% block sentence %}
+    <div class="row">Vous pouvez remplacer "{{ unhealthy_product }}" par :
+    </div>
+{% endblock %}
 
-                    </p>
+{% block product_to_display %}
+    <a href="{% url 'healthier_food:details' product_code=product.code %}"><img src="{{ product.image }}"><br><strong>{{ product.name }} - {{ product.nutriscore }}</strong><br></a>
 
-                    {% if not forloop.last %}
-                        <hr>
-                    {% endif %}
+    <a class="btn btn-light btn-xl sr-button" href="{% url 'healthier_food:add_favorite' favorite_code=product.code %}">Ajouter aux favoris</a>
+{% endblock %}
 
-                    {% empty %}
-                        <p>Aucune proposition de substitut satisfaisante :-(</p>
-                {% endfor %}
-            </div>
-        </div>
-    </header>
+{% block if_empty_sentence %}
+    <p>Aucune proposition de substitut satisfaisante :-(</p>
+{% endblock %}
+
+{% block url_for_previous %}
+    <li><a href="?page={{ products.previous_page_number }}">Précédent</a></li>
+{% endblock %}
+
+{% block url_for_next %}
+    <li><a href="?page={{ products.next_page_number }}">Suivant</a></li>
 {% endblock %}
