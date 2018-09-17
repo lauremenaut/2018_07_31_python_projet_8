@@ -8,6 +8,7 @@ from django.shortcuts import render, get_object_or_404
 
 from .models import Product, Category, Favorite
 from .forms import NewAccountForm
+from .params import max_products
 
 
 def home(request):
@@ -25,15 +26,12 @@ def search(request):
     else:
         unhealthy_products_list = []
 
-        # Maximum of displayed products
-        max_products = 20
-
         # Get unhealthy products (i.e. nutriscore = D ou E) which name contains user query
         unhealthy_products = Product.objects.filter(name__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
         for unhealthy_product in unhealthy_products:
             unhealthy_products_list.append(unhealthy_product)
 
-        # If less than 6 'found by name' products, then add 'found by desription' products
+        # If not enough 'found by name' products, then add 'found by desription' products
         if len(unhealthy_products_list) < max_products:
             more_unhealthy_products = Product.objects.filter(description__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
 
@@ -47,7 +45,7 @@ def search(request):
             except IndexError:
                 pass
 
-        # If still less than 6 products, then add 'found by brand' products
+        # If still not enough products, then add 'found by brand' products
         if len(unhealthy_products_list) < max_products:
             more_unhealthy_products = Product.objects.filter(brand__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
 
@@ -112,34 +110,39 @@ def substitute(request, unhealthy_product_code):
         # Get maximum number of shared categories
         maximum = max(shared_categories_counter.values())
 
+        # Make a list of healthy products sharing the maximum number of categories with unhealthy product
+        best_matches = []
+        for healthy_product, number_of_shared_categories in shared_categories_counter.items():
+            if number_of_shared_categories == maximum and len(best_matches) < max_products:
+                best_matches.append(healthy_product)
+
+        # Rearrange 'best_matches' list (putting "A"-products first)
+        healthiest_first_list = []
+        for match in best_matches:
+            if match.nutriscore == "A":
+                healthiest_first_list.append(match)
+        for match in best_matches:
+            if match.nutriscore == "B":
+                healthiest_first_list.append(match)
+
+        paginator = Paginator(healthiest_first_list, 6)
+        page = request.GET.get('page')
+
+        try:
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
+
     # If 'counter' is empty (i.e. no healthy product shares at least one category with unhealthy product)
     except ValueError as e:
         # Healthy products list is empty
-        healthiest_matches_list = []
-
-    # Make a list of healthy products sharing the maximum number of categories with unhealthy product
-    best_matches = []
-    for healthy_product, number_of_shared_categories in shared_categories_counter.items():
-        if number_of_shared_categories == maximum and len(best_matches) < 6:
-            best_matches.append(healthy_product)
-
-    # Make a sub-list of healthiest products (nutriscore = A)
-    healthiest_matches_list = []
-    for match in best_matches:
-            healthiest_matches = Product.objects.filter(name=match).filter(nutriscore="A")[:6]
-            for healthiest_match in healthiest_matches:
-                healthiest_matches_list.append(healthiest_match)
-
-    # If number of healthiest products < 6 and more 'best matches' left then add 'best match' to list
-    i = 0
-    while len(healthiest_matches_list) < 6 and len(healthiest_matches_list) < len(best_matches):
-        if best_matches[i] not in healthiest_matches_list:
-            healthiest_matches_list.append(best_matches[i])
-        i += 1
+        products = []
 
     context = {
         'unhealthy_product': unhealthy_product,
-        'products': healthiest_matches_list
+        'products': products
     }
 
     return render(request, 'pages/substitute.html', context)
@@ -232,7 +235,7 @@ def add_favorite(request, favorite_code):
     favorite = Favorite.objects.filter(code=favorite_code)
     print(f'favorite = {favorite}')
 
-    if len(favorite) == 0:
+    if not favorite.exists():
         product = get_object_or_404(Product, code=favorite_code)
         favorite = Favorite.objects.create(username=username,
                                            code=product.code,
