@@ -163,6 +163,7 @@ def new_account(request):
 
 def account_creation(request):
     username = request.POST.get('username')
+    email = request.POST.get('email')
     password = request.POST.get('password')
 
     form = NewAccountForm()
@@ -170,7 +171,7 @@ def account_creation(request):
     contact = User.objects.filter(username=username)
 
     if not contact.exists():
-        contact = User.objects.create_user(username=username, password=password)
+        contact = User.objects.create_user(username=username, email=email, password=password)
 
         context = {
             'contact': contact,
@@ -180,7 +181,12 @@ def account_creation(request):
         return render(request, 'pages/account_success.html', context)
 
     else:
-        return render(request, 'pages/account_failure.html')
+        context = {
+            'contact': contact[0],
+            'form': form
+        }
+        print(f'contact.username : {contact[0].username}')
+        return render(request, 'pages/account_failure.html', context)
 
 
 def login_user(request):
