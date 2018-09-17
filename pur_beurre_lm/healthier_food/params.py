@@ -13,3 +13,6 @@ tag_categories = ["Céréales pour petit-déjeuner",
                   "Snacks sucrés",
                   "Confiseries",
                   "Sodas"]
+
+# Maximum of displayed products
+max_products = 20
