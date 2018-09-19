@@ -17,7 +17,7 @@
 #         required=True
 #         )
 
-from django.forms import ModelForm, TextInput, PasswordInput
+from django.forms import ModelForm, TextInput, EmailInput, PasswordInput
 from django.contrib.auth.models import User
 
 
@@ -25,8 +25,9 @@ class NewAccountForm(ModelForm):
 
     class Meta:
         model = User
-        fields = ["username", "password"]
+        fields = ["username", "email", "password"]
         widgets = {
-            'username': TextInput(attrs={'class': 'form-control'}),
-            'password': PasswordInput(attrs={'class': 'form-control'})
+            'username': TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex : j.martin'}),
+            'email': EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ex : jean.martin@email.com'}),
+            'password': PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Ex : 32hg65ez98hj'})
         }
