@@ -150,7 +150,6 @@ def substitute(request, unhealthy_product_code):
 
 def details(request, product_code):
     code = int(product_code)
-
     product = get_object_or_404(Product, code=code)
 
     context = {
@@ -161,15 +160,19 @@ def details(request, product_code):
 
 
 def new_account(request):
-    return render(request, 'pages/new_account.html')
+    form = NewAccountForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'pages/new_account.html', context)
 
 
 def account_creation(request):
     username = request.POST.get('username')
     email = request.POST.get('email')
     password = request.POST.get('password')
-
-    form = NewAccountForm()
 
     contact = User.objects.filter(username=username)
 
@@ -178,7 +181,6 @@ def account_creation(request):
 
         context = {
             'contact': contact,
-            'form': form
         }
 
         return render(request, 'pages/account_success.html', context)
@@ -186,9 +188,8 @@ def account_creation(request):
     else:
         context = {
             'contact': contact[0],
-            'form': form
         }
-        print(f'contact.username : {contact[0].username}')
+
         return render(request, 'pages/account_failure.html', context)
 
 
