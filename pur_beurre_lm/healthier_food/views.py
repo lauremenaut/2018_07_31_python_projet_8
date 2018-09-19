@@ -18,7 +18,7 @@ def home(request):
 def search(request):
 
     # Query submitted by user
-    query = request.GET.get('query')
+    query = request.POST.get('query')
 
     if not query:
         context = {}
@@ -198,8 +198,8 @@ def login_user(request):
 
 
 def my_account(request):
-    username = request.GET.get('username')
-    password = request.GET.get('password')
+    username = request.POST.get('username')
+    password = request.POST.get('password')
 
     # contact = authenticate(username=username, password=password)
     contact = authenticate(username='Toto')
@@ -234,7 +234,6 @@ def add_favorite(request, favorite_code):
 
     # Check if favorite already in DB
     favorite = Favorite.objects.filter(code=favorite_code)
-    print(f'favorite = {favorite}')
 
     if not favorite.exists():
         product = get_object_or_404(Product, code=favorite_code)
