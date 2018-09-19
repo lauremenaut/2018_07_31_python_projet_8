@@ -24,13 +24,6 @@ class Category(models.Model):
         verbose_name_plural = "Catégories"
 
 
-class Store(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Product(models.Model):
     code = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
@@ -39,18 +32,9 @@ class Product(models.Model):
     url = models.URLField(max_length=255, unique=True)
     nutriscore = models.CharField(max_length=1)
     image = models.URLField()
-    # energy = models.IntegerField()
-    ingredients = models.TextField(max_length=500, null=True)
-    calories = models.IntegerField(null=True)
-    fat = models.IntegerField(null=True)
-    cholesterol = models.IntegerField(null=True)
-    carbohydrates = models.IntegerField(null=True)
-    sugars = models.IntegerField(null=True)
-    fibers = models.IntegerField(null=True)
-    proteins = models.IntegerField(null=True)
-    sodium = models.IntegerField(null=True)
+    # image_small = models.URLField()
+
     categories = models.ManyToManyField(Category, related_name='products')
-    stores = models.ManyToManyField(Store, related_name='products')
 
     def __str__(self):
         return self.name
@@ -69,8 +53,6 @@ class Favorite(models.Model):
     url = models.URLField(max_length=255, null=True)
     nutriscore = models.CharField(max_length=1, null=True)
     image = models.ImageField(null=True)
-
-    stores = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.name
