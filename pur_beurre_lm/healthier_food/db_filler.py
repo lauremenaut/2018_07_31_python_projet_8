@@ -12,7 +12,7 @@ from django.db.utils import DataError, IntegrityError
 from requests import get
 
 from .params import nutriscores, tag_categories
-from .models import Category, Store, Product
+from .models import Category, Product
 
 
 class DbFiller:
@@ -81,36 +81,21 @@ class DbFiller:
                 self.url = product['url']
                 self.nutriscore = product['nutrition_grades'].upper()
                 self.image = product['image_url']
-                # self.image = product['image_small_url']
-                self.ingredients = product['ingredients_text']
+                # self.image_small = product['image_small_url']
 
                 categories_to_strip = (product['categories']).split(',')
                 self.categories = []
                 for category in categories_to_strip:
                     self.categories.append(category.strip().capitalize())
-                stores_to_strip = (product['stores']).split(',')
-                self.stores = []
-                for store in stores_to_strip:
-                    self.stores.append(store.strip().capitalize())
-                # self.calories = product['energy_100g']
-                # self.fat = product['fat_100g']
-                # self.cholesterol = product['cholesterol_100g']
-                # self.carbohydrates = product['carbohydrates_100g']
-                # self.sugars = product['sugars_100g']
-                # self.fibers = product['fiber_100g']
-                # self.proteins = product['proteins_100g']
-                # self.sodium = product['sodium_100g']
 
                 if all([self.code, self.name, self.description, self.brand,
-                        self.url, self.nutriscore, self.image, self.categories[0],
-                        self.stores[0]]):
+                        self.url, self.nutriscore, self.image, self.image_small, self.categories[0]]):
 
                     new_product = Product(code=self.code, name=self.name,
                                           description=self.description,
                                           brand=self.brand, url=self.url,
                                           nutriscore=self.nutriscore,
-                                          image=self.image,
-                                          ingredients=self.ingredients)
+                                          image=self.image)
                     new_product.save()
 
                     for category in self.categories:
@@ -121,15 +106,6 @@ class DbFiller:
                             Category.objects.create(name=category)
                             new_category = Category.objects.get(name=category)
                             new_product.categories.add(new_category.id)
-
-                    for store in self.stores:
-                        existing_store = Store.objects.filter(name=store)
-                        if existing_store:
-                            new_product.stores.add(existing_store[0].id)
-                        else:
-                            Store.objects.create(name=store)
-                            new_store = Store.objects.get(name=store)
-                            new_product.stores.add(new_store.id)
 
         except KeyError as e:
             print('KeyError : ', e)
