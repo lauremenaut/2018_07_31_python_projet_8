@@ -2,6 +2,7 @@
 # coding: utf-8
 
 from django.db import models
+# from django.contrib.auth.models import AbstractUser
 
 
 # class TimestampedModel(models.Model):
@@ -25,13 +26,14 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    code = models.BigIntegerField(primary_key=True)
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(max_length=500, unique=True)
-    brand = models.CharField(max_length=30)
-    url = models.URLField(max_length=255, unique=True)
-    nutriscore = models.CharField(max_length=1)
-    image = models.URLField()
+    code = models.BigIntegerField(verbose_name='Code', primary_key=True)
+    name = models.CharField(verbose_name='Nom', max_length=100, unique=True)
+    slug = models.SlugField(verbose_name='Slug', max_length=100)
+    description = models.TextField(verbose_name='Description', max_length=500, unique=True)
+    brand = models.CharField(verbose_name='Marque', max_length=30)
+    url = models.URLField(verbose_name='URL', max_length=255, unique=True)
+    nutriscore = models.CharField(verbose_name='Nutriscore', max_length=1)
+    image = models.URLField(verbose_name='Image', )
     # image_small = models.URLField()
 
     categories = models.ManyToManyField(Category, related_name='products')
@@ -61,3 +63,7 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = "Favori"
         verbose_name_plural = "Favoris"
+
+
+# class PurBeurreUser(AbstractUser):
+    # USERNAME_FIELD = 'email'
