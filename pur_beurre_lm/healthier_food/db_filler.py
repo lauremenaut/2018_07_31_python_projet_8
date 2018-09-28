@@ -89,7 +89,7 @@ class DbFiller:
                     self.categories.append(category.strip().capitalize())
 
                 if all([self.code, self.name, self.description, self.brand,
-                        self.url, self.nutriscore, self.image, self.image_small, self.categories[0]]):
+                        self.url, self.nutriscore, self.image, self.categories[0]]):
 
                     new_product = Product(code=self.code, name=self.name,
                                           description=self.description,
