@@ -1,0 +1,33 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+<header class="detail_bg masthead text-center text-white d-flex">
+  <div class="container my-auto">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <img src="{{ product.image }}">
+        <h2 class="text-uppercase">
+          <strong>Bonjour {{ contact.username }}</strong>
+        </h2>
+        <h3 class="text-uppercase">
+          <strong>Bienvenue dans votre espace personnel !</strong>
+        </h3>
+        <hr>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="services">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mx-auto">
+        <a class="btn btn-primary btn-xl js-scroll-trigger">Votre email : {{ contact.email }}</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

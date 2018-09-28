@@ -1,0 +1,25 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+<header class="home_bg masthead text-center text-white d-flex">
+  <div class="container my-auto">
+
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h1 class="text-uppercase">
+          <strong>Désolé, les informations saisies ne sont associées à aucun compte existant</strong>
+        </h1>
+        <hr>
+      </div>
+
+      <div class="col-lg-8 mx-auto">
+        <a class="btn btn-light btn-xl sr-button" href="{% url 'healthier_food:login' %}">Réessayez de vous connecter</a>
+        <a class="btn btn-light btn-xl sr-button" href="{% url 'healthier_food:new_account' %}">Créez un nouveau compte</a>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+{% endblock %}

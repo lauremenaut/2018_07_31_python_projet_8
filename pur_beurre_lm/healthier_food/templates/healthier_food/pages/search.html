@@ -1,0 +1,29 @@
+{% extends 'healthier_food/layouts/products_display.html' %}
+
+
+
+
+
+
+
+
+{% block sentence %}
+    <div class="row">Voici les produit{{ products|length|pluralize }} correspondants à la recherche "{{ query }}" - Lequel voulez-vous substituer ?
+    </div>
+{% endblock %}
+
+{% block product_to_display %}
+    <a href="{% url 'healthier_food:substitute' unhealthy_product_code=product.code %}"><img src="{{ product.image }}"><br><strong>{{ product.name }} - {{ product.nutriscore }}</strong></a>
+{% endblock %}
+
+{% block if_empty_sentence %}
+    <p>Aucun produit ne correspond à votre recherche</p>
+{% endblock %}
+
+{% block url_for_previous %}
+    <li><a href="?query={{ query }}&page={{ products.previous_page_number }}">Précédent</a></li>
+{% endblock %}
+
+{% block url_for_next %}
+    <li><a href="?query={{ query }}&page={{ products.next_page_number }}">Suivant</a></li>
+{% endblock %}

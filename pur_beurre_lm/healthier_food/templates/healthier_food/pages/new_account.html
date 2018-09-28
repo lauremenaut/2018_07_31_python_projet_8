@@ -1,0 +1,58 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+<header class="home_bg masthead text-center text-white d-flex">
+  <div class="container my-auto">
+
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h1 class="text-uppercase">
+          <strong>Créez un nouveau compte !</strong>
+        </h1>
+        <hr>
+      </div>
+      <div class="col-lg-8 mx-auto">
+        <h2 class="text-faded mb-5">Entrez votre nom d'utilisateur et votre mot de passe</h2>
+      </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <form action="{% url 'healthier_food:account_creation' %}" method="post" accept-charset="utf-8">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.first_name.id_for_label }}" class="control-label">Prénom</label>
+                    {{ form.first_name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.last_name.id_for_label }}" class="control-label">Nom</label>
+                    {{ form.last_name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}" class="control-label">Nom d'utilisateur</label>
+                    {{ form.username }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}" class="control-label">Adresse email</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}" class="control-label">Mot de passe</label>
+                    {{ form.password }}
+                </div>
+
+                <button type="submit" class="btn btn-success">Créer</button>
+            </form>
+        </div>
+    </div>
+
+  </div>
+</header>
+
+{% endblock %}

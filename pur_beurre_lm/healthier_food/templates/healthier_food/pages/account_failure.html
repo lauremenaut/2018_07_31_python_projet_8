@@ -1,0 +1,30 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+<header class="home_bg masthead text-center text-white d-flex">
+  <div class="container my-auto">
+
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h1 class="text-uppercase">
+          <strong>Un compte existant est déjà associé au nom d'utilisateur "{{ contact.username }}"</strong>
+        </h1>
+        <hr>
+
+        <div class="col-lg-8 mx-auto">
+          <h2 class="text-faded mb-5">Vous pouvez recommencer en choisissant un autre nom d'utilisateur ou essayer de vous connecter à un compte existant</h2>
+
+          <a class="btn btn-light btn-xl sr-button" href="{% url 'healthier_food:new_account' %}">Créer un nouveau compte</a>
+          <a class="btn btn-light btn-xl sr-button" href="{% url 'healthier_food:login' %}">Se connecter</a>
+
+        </div>
+
+
+      </div>
+    </div>
+
+  </div>
+</header>
+
+{% endblock %}
