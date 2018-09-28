@@ -4,6 +4,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
 from .models import Product, Category, Favorite
@@ -12,7 +13,7 @@ from .params import max_products
 
 
 def home(request):
-    return render(request, 'pages/home.html')
+    return render(request, 'healthier_food/pages/home.html')
 
 
 def search(request):
@@ -27,54 +28,18 @@ def search(request):
         unhealthy_products_list = []
 
         # Get unhealthy products (i.e. nutriscore = D ou E) which name contains user query
-        unhealthy_products = Product.objects.filter(name__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
+        unhealthy_products = Product.objects.filter((Q(name__icontains=query) | Q(description__icontains=query) | Q(brand__icontains=query)) & (Q(nutriscore="D") | Q(nutriscore="E")))[:max_products]
         for unhealthy_product in unhealthy_products:
             unhealthy_products_list.append(unhealthy_product)
 
-        # If not enough 'found by name' products, then add 'found by desription' products
-        if len(unhealthy_products_list) < max_products:
-            more_unhealthy_products = Product.objects.filter(description__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
-
-            try:
-                i = 0
-                while len(unhealthy_products_list) < max_products:
-                    # Add product only if not already in the list
-                    if more_unhealthy_products[i] not in unhealthy_products_list:
-                        unhealthy_products_list.append(more_unhealthy_products[i])
-                    i += 1
-            except IndexError:
-                pass
-
-        # If still not enough products, then add 'found by brand' products
-        if len(unhealthy_products_list) < max_products:
-            more_unhealthy_products = Product.objects.filter(brand__icontains=query).exclude(nutriscore="A").exclude(nutriscore="B")[:max_products]
-
-            try:
-                i = 0
-                while len(unhealthy_products_list) < max_products:
-                    # Add product only if not already in the list
-                    if more_unhealthy_products[i] not in unhealthy_products_list:
-                        unhealthy_products_list.append(more_unhealthy_products[i])
-                    i += 1
-            except IndexError:
-                pass
-
-        paginator = Paginator(unhealthy_products_list, 6)
-        page = request.GET.get('page')
-
-        try:
-            products = paginator.page(page)
-        except PageNotAnInteger:
-            products = paginator.page(1)
-        except EmptyPage:
-            products = paginator.page(paginator.num_pages)
+        products = paginate(request, unhealthy_products_list, 6)
 
         context = {
             'query': query,
             'products': products
         }
 
-    return render(request, 'pages/search.html', context)
+    return render(request, 'healthier_food/pages/search.html', context)
 
 
 def substitute(request, unhealthy_product_code):
@@ -125,15 +90,7 @@ def substitute(request, unhealthy_product_code):
             if match.nutriscore == "B":
                 healthiest_first_list.append(match)
 
-        paginator = Paginator(healthiest_first_list, 6)
-        page = request.GET.get('page')
-
-        try:
-            products = paginator.page(page)
-        except PageNotAnInteger:
-            products = paginator.page(1)
-        except EmptyPage:
-            products = paginator.page(paginator.num_pages)
+        products = paginate(request, healthiest_first_list, 6)
 
     # If 'counter' is empty (i.e. no healthy product shares at least one category with unhealthy product)
     except ValueError as e:
@@ -145,31 +102,32 @@ def substitute(request, unhealthy_product_code):
         'products': products
     }
 
-    return render(request, 'pages/substitute.html', context)
+    return render(request, 'healthier_food/pages/substitute.html', context)
 
 
 def details(request, product_code):
-    code = int(product_code)
-    product = get_object_or_404(Product, code=code)
+    product = get_object_or_404(Product, code=product_code)
 
-    context = {
-        'product': product
-    }
+    # context = {
+    #     'product': product
+    # }
 
-    return render(request, 'pages/details.html', context)
+    return render(request, 'healthier_food/pages/details.html', locals())
 
 
 def new_account(request):
     form = NewAccountForm()
 
-    context = {
-        'form': form
-    }
+    # context = {
+    #     'form': form
+    # }
 
-    return render(request, 'pages/new_account.html', context)
+    return render(request, 'healthier_food/pages/new_account.html', locals())
 
 
 def account_creation(request):
+    first_name = request.POST.get('first_name')
+    last_name = request.POST.get('last_name')
     username = request.POST.get('username')
     email = request.POST.get('email')
     password = request.POST.get('password')
@@ -177,24 +135,24 @@ def account_creation(request):
     contact = User.objects.filter(username=username)
 
     if not contact.exists():
-        contact = User.objects.create_user(username=username, email=email, password=password)
+        contact = User.objects.create_user(first_name=first_name, last_name=last_name, username=username, email=email, password=password)
 
-        context = {
-            'contact': contact,
-        }
+        # context = {
+        #     'contact': contact,
+        # }
 
-        return render(request, 'pages/account_success.html', context)
+        return render(request, 'healthier_food/pages/account_success.html', locals())
 
     else:
         context = {
             'contact': contact[0],
         }
 
-        return render(request, 'pages/account_failure.html', context)
+        return render(request, 'healthier_food/pages/account_failure.html', context)
 
 
 def login_user(request):
-    return render(request, 'pages/login.html')
+    return render(request, 'healthier_food/pages/login.html')
 
 
 def my_account(request):
@@ -212,10 +170,10 @@ def my_account(request):
             'contact': contact
         }
 
-        return render(request, 'pages/my_account.html', context)
+        return render(request, 'healthier_food/pages/my_account.html', context)
 
     else:
-        return render(request, 'pages/login_failure.html')
+        return render(request, 'healthier_food/pages/login_failure.html')
 
 
 def favorites(request):
@@ -226,7 +184,7 @@ def favorites(request):
         'favorites': favorites
     }
 
-    return render(request, 'pages/favorites.html', context)
+    return render(request, 'healthier_food/pages/favorites.html', context)
 
 
 def add_favorite(request, favorite_code):
@@ -246,13 +204,27 @@ def add_favorite(request, favorite_code):
                                            image=product.image
                                            )
 
-        context = {
-            'favorite': favorite
-        }
+        # context = {
+        #     'favorite': favorite
+        # }
 
-        return render(request, 'pages/favorite_success.html', context)
+        return render(request, 'healthier_food/pages/favorite_success.html', locals())
 
 
 def logout_user(request):
     logout(request)
-    return render(request, 'pages/logout.html')
+    return render(request, 'healthier_food/pages/logout.html')
+
+
+def paginate(request, product_list, nb):
+    """ Not a view but a function to factorise pagination code """
+    paginator = Paginator(product_list, nb)
+    page = request.GET.get('page')
+
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+    return products
