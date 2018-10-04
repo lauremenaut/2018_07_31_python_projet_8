@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
 from .models import Product, Category, Favorite
-from .forms import NewAccountForm
+from .forms import NewAccountForm, LoginForm
 from .params import max_products
 
 
@@ -128,7 +128,7 @@ def new_account(request):
 def account_creation(request):
     first_name = request.POST.get('first_name')
     last_name = request.POST.get('last_name')
-    username = request.POST.get('username')
+    username = request.POST.get('email')
     email = request.POST.get('email')
     password = request.POST.get('password')
 
@@ -152,7 +152,21 @@ def account_creation(request):
 
 
 def login_user(request):
-    return render(request, 'healthier_food/pages/login.html')
+    error = False
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data[('username')]
+            password = form.cleaned_data[('password')]
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+            else:
+                error = True
+    else:
+        form = LoginForm()
+
+    return render(request, 'healthier_food/pages/login.html', locals())
 
 
 def my_account(request):
